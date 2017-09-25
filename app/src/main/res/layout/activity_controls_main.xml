@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.khelair.mintone.ControlsMain">
+
+    <TextView
+        android:id="@+id/txtHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:typeface="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.032"
+        android:layout_marginTop="8dp"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+    <RadioGroup
+        android:id="@+id/rgrpFreqPresets"
+        android:layout_width="183dp"
+        android:layout_height="204dp"
+        android:layout_marginTop="8dp"
+        android:onClick="onChangeGrpFreqPresets"
+        app:layout_constraintTop_toBottomOf="@+id/txtSubHeader"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="136dp">
+
+        <RadioButton
+            android:id="@+id/rbtOne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:fontFamily="cursive"
+            android:text="@string/value_one"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <RadioButton
+            android:id="@+id/rbtTwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="cursive"
+            android:text="@string/value_two"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <RadioButton
+            android:id="@+id/rbtThree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="cursive"
+            android:text="@string/value_three"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/txtSubHeader"
+        android:layout_width="223dp"
+        android:layout_height="45dp"
+        android:text="@string/text_subheader"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/txtHeader" />
+
+    <SeekBar
+        android:id="@+id/sbrFreqSlider"
+        android:layout_width="349dp"
+        android:layout_height="71dp"
+        android:max="@integer/freq_max"
+        tools:min="@integer/freq_min"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/rgrpFreqPresets"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/tglPlaying"
+        android:layout_width="251dp"
+        android:layout_height="49dp"
+        android:layout_marginBottom="18dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:fontFamily="monospace"
+        android:onClick="onTogglePlay"
+        android:text="ToggleButton"
+        android:textOff="@string/text_off"
+        android:textOn="@string/text_on"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <EditText
+        android:id="@+id/edtManualFreq"
+        android:layout_width="159dp"
+        android:layout_height="64dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rgrpFreqPresets"
+        tools:layout_editor_absoluteX="209dp"
+        tools:layout_editor_absoluteY="126dp" />
+
+    <Button
+        android:id="@+id/btnManualFreqChange"
+        android:layout_width="161dp"
+        android:layout_height="65dp"
+        android:text="@string/text_set_manually"
+        android:onClick="onSetManualFreq"
+        app:layout_constraintTop_toBottomOf="@+id/edtManualFreq"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteX="207dp"
+        tools:layout_editor_absoluteY="213dp" />
+
+</android.support.constraint.ConstraintLayout>

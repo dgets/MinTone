@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="freq_min">20</integer>
+    <integer name="freq_max">20000</integer>
+    <integer name="freq1">432</integer>
+    <integer name="freq2">528</integer>
+    <integer name="freq3">666</integer>
+</resources>

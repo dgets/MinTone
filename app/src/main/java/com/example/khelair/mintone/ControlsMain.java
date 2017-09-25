@@ -17,12 +17,9 @@ import com.example.khelair.mintone.MyException;
 public class ControlsMain extends AppCompatActivity {
 
     /*
-     * tone selection via seekbar works
+     * BUGS:
      * radiobutton tone selection does not
-     * stop playing tone does not work
-     * actually, I don't think changing the tone at ALL works
-     * enter value manually is not implemented
-     * program crashes upon going from play back to paused
+     * enter tone value manually does not work
      */
 
     private int     duration    =   3;
@@ -38,7 +35,7 @@ public class ControlsMain extends AppCompatActivity {
     //private RadioGroup rgrp;
     private RadioButton btnOne, btnTwo, btnThree, btnFour;
     private SeekBar sb;
-    private Button setManually;
+    private Button togglePlayback, setManually;
     private EditText manualFreqValue;
 
     AudioTrack ouahful;
@@ -54,21 +51,43 @@ public class ControlsMain extends AppCompatActivity {
         btnThree = (RadioButton) findViewById(R.id.rbtThree);
         //btnFour = (RadioButton) findViewById(R.id.rbtFour);
 
+        togglePlayback = (Button) findViewById(R.id.btnTglPlaying);
         setManually = (Button) findViewById(R.id.btnManualFreqChange);
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
 
         sb = (SeekBar) findViewById(R.id.sbrFreqSlider);
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
             public void onProgressChanged(SeekBar freqSpectrum, int progress, boolean ouah) {
                 freq = progress;
             }
 
+            @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 //ouah
             }
 
+            @Override
             public void onStopTrackingTouch(SeekBar freqSpectrum) {
                 regen = true;
+            }
+        });
+
+        ouahful = new AudioTrack(AudioManager.STREAM_MUSIC,
+                sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
+                (2 * numSamples), AudioTrack.MODE_STATIC);
+        ouahful.setNotificationMarkerPosition(8000);
+        ouahful.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener()
+        {
+            @Override
+            public void onPeriodicNotification(AudioTrack track) {
+                // nothing to do
+            }
+
+            @Override
+            public void onMarkerReached(AudioTrack track) {
+                //playing = !playing;
+                togglePlayback.callOnClick();
             }
         });
     }
@@ -78,10 +97,6 @@ public class ControlsMain extends AppCompatActivity {
         /* AudioTrack  ouahful = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 sounds.length, AudioTrack.MODE_STATIC); */
-
-        ouahful = new AudioTrack(AudioManager.STREAM_MUSIC,
-                sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
-                sounds.length, AudioTrack.MODE_STATIC);
 
         if (!playing) {
             if (regen) {

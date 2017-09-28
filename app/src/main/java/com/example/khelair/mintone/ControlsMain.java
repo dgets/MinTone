@@ -32,7 +32,7 @@ public class ControlsMain extends AppCompatActivity {
     private boolean playing     =   false;
     private boolean regen       =   true;
 
-    //private RadioGroup rgrp;
+    private RadioGroup rgrp;
     private RadioButton btnOne, btnTwo, btnThree;   //, btnFour;
     private SeekBar sb;
     private Button btnTogglePlayback, btnSetManually;
@@ -45,7 +45,7 @@ public class ControlsMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controls_main);
 
-        //rgrp = (RadioGroup) findViewById(R.id.rgrpFreqPresets);
+        rgrp = (RadioGroup) findViewById(R.id.rgrpFreqPresets);
         btnOne = (RadioButton) findViewById(R.id.rbtOne);
         btnTwo = (RadioButton) findViewById(R.id.rbtTwo);
         btnThree = (RadioButton) findViewById(R.id.rbtThree);
@@ -53,7 +53,7 @@ public class ControlsMain extends AppCompatActivity {
 
         btnTogglePlayback = (Button) findViewById(R.id.btnTglPlaying);
         btnSetManually = (Button) findViewById(R.id.btnManualFreqChange);
-        btnSetManually.setClickable(false);
+        btnSetManually.setEnabled(false);
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
 
         sb = (SeekBar) findViewById(R.id.sbrFreqSlider);
@@ -66,6 +66,7 @@ public class ControlsMain extends AppCompatActivity {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 //ouah
+                btnSetManually.setEnabled(false);
             }
 
             @Override
@@ -87,8 +88,6 @@ public class ControlsMain extends AppCompatActivity {
         /* AudioTrack  ouahful = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 sounds.length, AudioTrack.MODE_STATIC); */
-
-        //btnSetManually.setClickable(false);   //wut?
 
         if (!playing) {
             if (regen) {
@@ -122,14 +121,15 @@ public class ControlsMain extends AppCompatActivity {
             ouahful.stop(); //need to convert to save the track beyond this method
         }
 
+        btnSetManually.setEnabled(false);
         playing = !playing;
     }
 
     public void onClickGrpFreqPresets(View view) {
-        btnSetManually.setClickable(false);
+        btnSetManually.setEnabled(false);
 
         //use getCheckedRadioButtonId for a little less redundancy
-        if (btnOne.isChecked()) {
+        /* if (btnOne.isChecked()) {
             //so yeah, this is obviously a terrible way to do this
             freq = Integer.parseInt((String) btnOne.getText());
         } else if (btnTwo.isChecked()) {
@@ -139,20 +139,41 @@ public class ControlsMain extends AppCompatActivity {
         }
 
         sb.setProgress((int) freq);
+        regen = true; */
+    }
+
+    public void onPresetFreqClick(View view) {
+        btnSetManually.setEnabled(false);
+
+        //freq = Integer.parseInt((String) rgrp.get )
+        switch (rgrp.getCheckedRadioButtonId()) {
+            //so yeah, we need to figure out how to pull values from integers.xml instead of this
+            //kruft
+            case R.id.rbtOne:
+                freq = Integer.parseInt((String) btnOne.getText());
+                break;
+            case R.id.rbtTwo:
+                freq = Integer.parseInt((String) btnTwo.getText());
+                break;
+            case R.id.rbtThree:
+                freq = Integer.parseInt((String) btnThree.getText());
+                break;
+        }
+
         regen = true;
     }
 
     public void onSetManualFreq(View view) {
         regen = true;
         freq = getManualFreq();
+
+        manualFreqValue.setText("");    //how to make the numeric entry pad go away?
+        //manualFreqValue.setEnabled(false);
+        //btnSetManually.setSelected(false);
     }
 
     public void onClickManualFreqEntry(View view) {
-        btnSetManually.setClickable(true);
-    }
-
-    public void onClickSeekbar(View view) {
-        btnSetManually.setClickable(false);
+        btnSetManually.setEnabled(true);
     }
 
     /*

@@ -42,6 +42,7 @@
             android:layout_weight="1"
             android:checked="true"
             android:fontFamily="cursive"
+            android:onClick="onPresetFreqClick"
             android:text="@string/value_one"
             android:textAlignment="center"
             android:textSize="30sp"
@@ -53,6 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="cursive"
+            android:onClick="onPresetFreqClick"
             android:text="@string/value_two"
             android:textSize="30sp"
             android:textStyle="bold" />
@@ -63,6 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="cursive"
+            android:onClick="onPresetFreqClick"
             android:text="@string/value_three"
             android:textSize="30sp"
             android:textStyle="bold" />

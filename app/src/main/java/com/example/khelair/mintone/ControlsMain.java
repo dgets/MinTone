@@ -23,7 +23,9 @@ public class ControlsMain extends AppCompatActivity {
     private int     duration    =   3;
     private int     sampleRate  =   8000;
     private int     numSamples  =   duration * sampleRate;
-    private int     freq        =   432;
+    private int     freq;    //getResources().getInteger(R.integer.freq1);
+    private int     max_freq;//    =   getResources().getInteger(R.integer.freq_max);
+    private int     min_freq;//    =   getResources().getInteger(R.integer.freq_min);
     //private double  sample[]    =   new double[numSamples];
 
     //private byte    soundData[] =   new byte[2 * numSamples];
@@ -53,6 +55,10 @@ public class ControlsMain extends AppCompatActivity {
         btnSetManually = (Button) findViewById(R.id.btnManualFreqChange);
         btnSetManually.setEnabled(false);
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
+
+        freq = getResources().getInteger(R.integer.freq1);
+        max_freq = getResources().getInteger(R.integer.freq_max);
+        min_freq = getResources().getInteger(R.integer.freq_min);
 
         sb = (SeekBar) findViewById(R.id.sbrFreqSlider);
         sb.setProgress(freq);
@@ -135,13 +141,16 @@ public class ControlsMain extends AppCompatActivity {
             //so yeah, we need to figure out how to pull values from integers.xml instead of this
             //kruft
             case R.id.rbtOne:
-                freq = Integer.parseInt((String) btnOne.getText());
+                //freq = Integer.parseInt((String) btnOne.getText());
+                freq = getResources().getInteger(R.integer.freq1);
                 break;
             case R.id.rbtTwo:
-                freq = Integer.parseInt((String) btnTwo.getText());
+                //freq = Integer.parseInt((String) btnTwo.getText());
+                freq = getResources().getInteger(R.integer.freq2);
                 break;
             case R.id.rbtThree:
-                freq = Integer.parseInt((String) btnThree.getText());
+                //freq = Integer.parseInt((String) btnThree.getText());
+                freq = getResources().getInteger(R.integer.freq3);
                 break;
         }
 
@@ -206,12 +215,11 @@ public class ControlsMain extends AppCompatActivity {
             ouah = 100;
         }
 
-        //find out how to retrieve freq_min & _max from integers.xml
-        /* if ((ouah < 20) || (ouah > 20000)) {
+        if ((ouah < min_freq) || (ouah > max_freq)) {
             //out of range, kill the user for the blasphemy
 
             //throw MyException("Value out of range");
-        } */
+        }
 
         return (int) ouah;
     }

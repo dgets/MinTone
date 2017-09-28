@@ -18,8 +18,6 @@ public class ControlsMain extends AppCompatActivity {
 
     /*
      * BUGS:
-     * radiobutton tone selection does not
-     * enter tone value manually does not work
      */
 
     private int     duration    =   3;
@@ -57,10 +55,11 @@ public class ControlsMain extends AppCompatActivity {
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
 
         sb = (SeekBar) findViewById(R.id.sbrFreqSlider);
+        sb.setProgress(freq);
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar freqSpectrum, int progress, boolean ouah) {
-                freq = progress;
+                //freq = progress;
             }
 
             @Override
@@ -127,25 +126,11 @@ public class ControlsMain extends AppCompatActivity {
 
     public void onClickGrpFreqPresets(View view) {
         btnSetManually.setEnabled(false);
-
-        //use getCheckedRadioButtonId for a little less redundancy
-        /* if (btnOne.isChecked()) {
-            //so yeah, this is obviously a terrible way to do this
-            freq = Integer.parseInt((String) btnOne.getText());
-        } else if (btnTwo.isChecked()) {
-            freq = Integer.parseInt((String) btnTwo.getText());
-        } else {
-            freq = Integer.parseInt((String) btnThree.getText());
-        }
-
-        sb.setProgress((int) freq);
-        regen = true; */
     }
 
     public void onPresetFreqClick(View view) {
         btnSetManually.setEnabled(false);
 
-        //freq = Integer.parseInt((String) rgrp.get )
         switch (rgrp.getCheckedRadioButtonId()) {
             //so yeah, we need to figure out how to pull values from integers.xml instead of this
             //kruft
@@ -160,12 +145,14 @@ public class ControlsMain extends AppCompatActivity {
                 break;
         }
 
+        sb.setProgress(freq);
         regen = true;
     }
 
     public void onSetManualFreq(View view) {
         regen = true;
         freq = getManualFreq();
+        sb.setProgress(freq);
 
         manualFreqValue.setText("");    //how to make the numeric entry pad go away?
         //manualFreqValue.setEnabled(false);

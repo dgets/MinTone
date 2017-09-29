@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.example.khelair.mintone.MyException;
 
@@ -177,8 +178,14 @@ public class ControlsMain extends AppCompatActivity {
     }
 
     public void onSetManualFreq(View view) {
+        try {
+            freq = getManualFreq();
+        } catch (Exception e) {
+            return;
+        }
+
         regen = true;
-        freq = getManualFreq();
+        //freq = getManualFreq();
         sbFreq.setProgress(freq);
 
         manualFreqValue.setText("");    //how to make the numeric entry pad go away?
@@ -223,22 +230,34 @@ public class ControlsMain extends AppCompatActivity {
         return sampleInProgress;
     }
 
-    public int getManualFreq() {
+    public void displayError(String message) {
+
+    }
+
+    public int getManualFreq() throws MyException {
         int ouah = 0;
 
         try {
             ouah = Integer.parseInt(manualFreqValue.getText().toString());
         } catch (NumberFormatException e) {
             //god ouah ouah ouah
-            ouah = 100;
+            Toast.makeText(getApplicationContext(), e.getMessage() , Toast.LENGTH_LONG).show();
+
+            manualFreqValue.setText(Integer.toString(freq));
+            return freq;
         }
 
-        if ((ouah < min_freq) || (ouah > max_freq)) {
+        if ((ouah >= min_freq) && (ouah <= max_freq)) {
+            return ouah;
+        } else if (ouah < min_freq) {
             //out of range, kill the user for the blasphemy
-
-            //throw MyException("Value out of range");
+            Toast.makeText(getApplicationContext(),
+                    "Value < " + min_freq, Toast.LENGTH_SHORT).show();
+            throw new MyException("Value too low (<" + min_freq + ")");
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "Value > " + max_freq, Toast.LENGTH_SHORT).show();
+            throw new MyException("Value too high (>" + max_freq + ")");
         }
-
-        return (int) ouah;
     }
 }

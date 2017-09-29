@@ -1,5 +1,6 @@
 package com.example.khelair.mintone;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -16,29 +17,25 @@ import com.example.khelair.mintone.MyException;
 
 public class ControlsMain extends AppCompatActivity {
 
-    /*
-     * BUGS:
-     */
-
+    //a little bit more limited scope would be nice
     private int     duration    =   3;
     private int     sampleRate  =   8000;
     private int     numSamples  =   duration * sampleRate;
-    private int     freq;    //getResources().getInteger(R.integer.freq1);
-    private int     max_freq;//    =   getResources().getInteger(R.integer.freq_max);
-    private int     min_freq;//    =   getResources().getInteger(R.integer.freq_min);
-    //private double  sample[]    =   new double[numSamples];
-
-    //private byte    soundData[] =   new byte[2 * numSamples];
+    private int     freq;
+    private int     max_freq;
+    private int     min_freq;
     private boolean playing     =   false;
     private boolean regen       =   true;
 
+    //controls
     private RadioGroup rgrp;
-    private RadioButton btnOne, btnTwo, btnThree;   //, btnFour;
-    private SeekBar sb;
+    //private RadioButton btnOne, btnTwo, btnThree;   //, btnFour;
+    private SeekBar sbFreq, sbVol;
     private Button btnTogglePlayback, btnSetManually;
     private EditText manualFreqValue;
 
     AudioTrack ouahful;
+    AudioManager audioBoss;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +43,9 @@ public class ControlsMain extends AppCompatActivity {
         setContentView(R.layout.activity_controls_main);
 
         rgrp = (RadioGroup) findViewById(R.id.rgrpFreqPresets);
-        btnOne = (RadioButton) findViewById(R.id.rbtOne);
+        /* btnOne = (RadioButton) findViewById(R.id.rbtOne);
         btnTwo = (RadioButton) findViewById(R.id.rbtTwo);
-        btnThree = (RadioButton) findViewById(R.id.rbtThree);
-        //btnFour = (RadioButton) findViewById(R.id.rbtFour);
+        btnThree = (RadioButton) findViewById(R.id.rbtThree); */
 
         btnTogglePlayback = (Button) findViewById(R.id.btnTglPlaying);
         btnSetManually = (Button) findViewById(R.id.btnManualFreqChange);
@@ -57,32 +53,59 @@ public class ControlsMain extends AppCompatActivity {
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
 
         freq = getResources().getInteger(R.integer.freq1);
+        //vol = getResources().getInteger(R.integer.vol_start);
+        //maxVol = audioBoss.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         max_freq = getResources().getInteger(R.integer.freq_max);
         min_freq = getResources().getInteger(R.integer.freq_min);
 
-        sb = (SeekBar) findViewById(R.id.sbrFreqSlider);
-        sb.setProgress(freq);
-        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        sbFreq = (SeekBar) findViewById(R.id.sbrFreqSlider);
+        sbFreq.setProgress(freq);
+        sbFreq.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar freqSpectrum, int progress, boolean ouah) {
                 //freq = progress;
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                //ouah
+            public void onStartTrackingTouch(SeekBar freqSpectrum) {
                 btnSetManually.setEnabled(false);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar freqSpectrum) {
+                freq = sbFreq.getProgress();
                 regen = true;
+            }
+        });
+        sbVol = (SeekBar) findViewById(R.id.sbrVolSlider);
+        sbVol.setProgress(getResources().getInteger(R.integer.vol_start));
+        sbVol.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            private int volStep;
+
+            @Override
+            public void onProgressChanged(SeekBar volSpectrum, int progress, boolean ouah) {
+                //ouah
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar volSpectrum) {
+                btnSetManually.setEnabled(false);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar volSpectrum) {
+                volStep = (audioBoss.getStreamMaxVolume(AudioManager.STREAM_MUSIC) /
+                        (getResources().getInteger(R.integer.vol_max) -
+                                getResources().getInteger(R.integer.vol_min)));
+                audioBoss.setStreamVolume(AudioManager.STREAM_MUSIC,
+                        (sbVol.getProgress() * volStep), 0);
             }
         });
 
         ouahful = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 (2 * numSamples), AudioTrack.MODE_STATIC);
+        audioBoss = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }
 
     /*
@@ -114,15 +137,15 @@ public class ControlsMain extends AppCompatActivity {
                 public void onMarkerReached(AudioTrack track) {
                     if (playing) {
                         ouahful.stop();
-                        btnTogglePlayback.setText("Play"); //working every other time?  wtf
+                        btnTogglePlayback.setText(getResources().getString(R.string.text_off));
                         playing = !playing;
                     }
                 }
               });
-            btnTogglePlayback.setText("Pause");
+            btnTogglePlayback.setText(getResources().getString(R.string.text_on));
             ouahful.play();
         } else {
-            btnTogglePlayback.setText("Play");
+            btnTogglePlayback.setText(getResources().getString(R.string.text_off));
             ouahful.stop(); //need to convert to save the track beyond this method
         }
 
@@ -138,30 +161,25 @@ public class ControlsMain extends AppCompatActivity {
         btnSetManually.setEnabled(false);
 
         switch (rgrp.getCheckedRadioButtonId()) {
-            //so yeah, we need to figure out how to pull values from integers.xml instead of this
-            //kruft
             case R.id.rbtOne:
-                //freq = Integer.parseInt((String) btnOne.getText());
                 freq = getResources().getInteger(R.integer.freq1);
                 break;
             case R.id.rbtTwo:
-                //freq = Integer.parseInt((String) btnTwo.getText());
                 freq = getResources().getInteger(R.integer.freq2);
                 break;
             case R.id.rbtThree:
-                //freq = Integer.parseInt((String) btnThree.getText());
                 freq = getResources().getInteger(R.integer.freq3);
                 break;
         }
 
-        sb.setProgress(freq);
+        sbFreq.setProgress(freq);
         regen = true;
     }
 
     public void onSetManualFreq(View view) {
         regen = true;
         freq = getManualFreq();
-        sb.setProgress(freq);
+        sbFreq.setProgress(freq);
 
         manualFreqValue.setText("");    //how to make the numeric entry pad go away?
         //manualFreqValue.setEnabled(false);

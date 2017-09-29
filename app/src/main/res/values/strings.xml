@@ -5,4 +5,6 @@
     <string name="text_on">Pause</string>
     <string name="text_pick_value">Enter Value Manually</string>
     <string name="text_set_manually">Set Freq Manually</string>
+    <string name="text_subheader2">Volume</string>
+    <string name="text_subheader3">Frequency</string>
 </resources>

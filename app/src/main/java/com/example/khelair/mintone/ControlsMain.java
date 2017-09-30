@@ -9,28 +9,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
+//import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import com.example.khelair.mintone.MyException;
+//import com.example.khelair.mintone.MyException;
 
 public class ControlsMain extends AppCompatActivity {
 
-    //a little bit more limited scope would be nice
+    //a little bit more of a limited scope would be nice
     private int     duration    =   3;
     private int     sampleRate  =   8000;
     private int     numSamples  =   duration * sampleRate;
-    private int     freq;
-    private int     max_freq;
-    private int     min_freq;
+    private int     freq, max_freq, min_freq;
     private boolean playing     =   false;
     private boolean regen       =   true;
 
     //controls
     private RadioGroup rgrp;
-    //private RadioButton btnOne, btnTwo, btnThree;   //, btnFour;
     private SeekBar sbFreq, sbVol;
     private Button btnTogglePlayback, btnSetManually;
     private EditText manualFreqValue;
@@ -44,18 +41,12 @@ public class ControlsMain extends AppCompatActivity {
         setContentView(R.layout.activity_controls_main);
 
         rgrp = (RadioGroup) findViewById(R.id.rgrpFreqPresets);
-        /* btnOne = (RadioButton) findViewById(R.id.rbtOne);
-        btnTwo = (RadioButton) findViewById(R.id.rbtTwo);
-        btnThree = (RadioButton) findViewById(R.id.rbtThree); */
-
         btnTogglePlayback = (Button) findViewById(R.id.btnTglPlaying);
         btnSetManually = (Button) findViewById(R.id.btnManualFreqChange);
         btnSetManually.setEnabled(false);
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
 
         freq = getResources().getInteger(R.integer.freq1);
-        //vol = getResources().getInteger(R.integer.vol_start);
-        //maxVol = audioBoss.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         max_freq = getResources().getInteger(R.integer.freq_max);
         min_freq = getResources().getInteger(R.integer.freq_min);
 
@@ -123,7 +114,7 @@ public class ControlsMain extends AppCompatActivity {
                 sounds = initSound(freq);
             }
             ouahful = buildTrack(sounds);
-            ouahful.setNotificationMarkerPosition(8000);
+            ouahful.setNotificationMarkerPosition(numSamples);
 
             //should this be handled here?  probably not, methinks
             ouahful.setPlaybackPositionUpdateListener(
@@ -144,7 +135,14 @@ public class ControlsMain extends AppCompatActivity {
                 }
               });
             btnTogglePlayback.setText(getResources().getString(R.string.text_on));
-            ouahful.play();
+            try {
+                ouahful.play();
+            } catch (Exception e) {
+                btnTogglePlayback.setText(getResources().getString(R.string.text_off));
+                Toast.makeText(getApplicationContext(),
+                        "Playback Error", Toast.LENGTH_SHORT).show();
+                return;
+            }
         } else {
             btnTogglePlayback.setText(getResources().getString(R.string.text_off));
             ouahful.stop(); //need to convert to save the track beyond this method
@@ -155,10 +153,12 @@ public class ControlsMain extends AppCompatActivity {
     }
 
     public void onClickGrpFreqPresets(View view) {
+        manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
         btnSetManually.setEnabled(false);
     }
 
     public void onPresetFreqClick(View view) {
+        manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
         btnSetManually.setEnabled(false);
 
         switch (rgrp.getCheckedRadioButtonId()) {
@@ -181,19 +181,20 @@ public class ControlsMain extends AppCompatActivity {
         try {
             freq = getManualFreq();
         } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),
+                    "Unable to fetch frequency", Toast.LENGTH_SHORT).show();
+            manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
             return;
         }
 
         regen = true;
-        //freq = getManualFreq();
         sbFreq.setProgress(freq);
 
-        manualFreqValue.setText("");    //how to make the numeric entry pad go away?
-        //manualFreqValue.setEnabled(false);
-        //btnSetManually.setSelected(false);
+        manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
     }
 
     public void onClickManualFreqEntry(View view) {
+        manualFreqValue.setEnabled(true);
         btnSetManually.setEnabled(true);
     }
 
@@ -230,12 +231,8 @@ public class ControlsMain extends AppCompatActivity {
         return sampleInProgress;
     }
 
-    public void displayError(String message) {
-
-    }
-
     public int getManualFreq() throws MyException {
-        int ouah = 0;
+        int ouah;
 
         try {
             ouah = Integer.parseInt(manualFreqValue.getText().toString());

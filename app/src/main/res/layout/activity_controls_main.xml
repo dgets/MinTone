@@ -92,14 +92,13 @@
         android:layout_height="71dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         android:max="@integer/freq_max"
-        android:onClick="onClickSeekbar"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        tools:min="@integer/freq_min"
-        app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/txtSubHeader2" />
+        app:layout_constraintTop_toBottomOf="@+id/txtSubHeader2"
+        tools:min="@integer/freq_min" />
 
     <ToggleButton
         android:id="@+id/btnTglPlaying"
@@ -161,7 +160,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
-        android:onClick="onClickVol"
         android:text="@string/text_subheader3"
         android:textAlignment="center"
         app:layout_constraintLeft_toLeftOf="parent"

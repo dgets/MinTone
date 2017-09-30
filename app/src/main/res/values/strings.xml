@@ -7,4 +7,5 @@
     <string name="text_set_manually">Set Freq Manually</string>
     <string name="text_subheader2">Volume</string>
     <string name="text_subheader3">Frequency</string>
+    <string name="text_using_preset">Preset</string>
 </resources>

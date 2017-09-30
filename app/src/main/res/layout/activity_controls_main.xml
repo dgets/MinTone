@@ -10,19 +10,19 @@
         android:id="@+id/txtHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:fontFamily="monospace"
         android:text="@string/app_name"
         android:textAlignment="center"
-        android:textSize="36sp"
+        android:textSize="44sp"
         android:textStyle="bold"
         android:typeface="normal"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.032"
-        android:layout_marginTop="8dp"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintVertical_bias="0.032" />
 
     <RadioGroup
         android:id="@+id/rgrpFreqPresets"
@@ -88,17 +88,18 @@
 
     <SeekBar
         android:id="@+id/sbrFreqSlider"
-        android:layout_width="0dp"
-        android:layout_height="71dp"
+        android:layout_width="194dp"
+        android:layout_height="58dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:max="@integer/freq_max"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/rgrpFreqPresets"
         app:layout_constraintTop_toBottomOf="@+id/txtSubHeader2"
-        tools:min="@integer/freq_min" />
+        tools:min="@integer/freq_min"
+        tools:layout_editor_absoluteY="295dp" />
 
     <ToggleButton
         android:id="@+id/btnTglPlaying"
@@ -109,7 +110,6 @@
         android:layout_marginRight="8dp"
         android:fontFamily="monospace"
         android:onClick="onTogglePlay"
-        android:text="ToggleButton"
         android:textOff="@string/text_off"
         android:textOn="@string/text_on"
         android:textSize="24sp"
@@ -178,5 +178,20 @@
         app:layout_constraintTop_toBottomOf="@+id/txtSubHeader3"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/txtFreqSelected"
+        android:layout_width="149dp"
+        android:layout_height="59dp"
+        android:fontFamily="monospace"
+        android:text="@string/text_using_preset"
+        android:textAlignment="center"
+        android:textSize="38sp"
+        android:typeface="monospace"
+        app:layout_constraintBottom_toBottomOf="@+id/sbrFreqSlider"
+        app:layout_constraintLeft_toRightOf="@+id/sbrFreqSlider"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteX="225dp"
+        tools:layout_editor_absoluteY="289dp" />
 
 </android.support.constraint.ConstraintLayout>

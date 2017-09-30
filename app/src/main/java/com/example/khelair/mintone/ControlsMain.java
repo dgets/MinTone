@@ -12,6 +12,7 @@ import android.widget.EditText;
 //import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.example.khelair.mintone.MyException;
@@ -31,6 +32,7 @@ public class ControlsMain extends AppCompatActivity {
     private SeekBar sbFreq, sbVol;
     private Button btnTogglePlayback, btnSetManually;
     private EditText manualFreqValue;
+    private TextView freqSelectedView;
 
     AudioTrack ouahful;
     AudioManager audioBoss;
@@ -45,6 +47,7 @@ public class ControlsMain extends AppCompatActivity {
         btnSetManually = (Button) findViewById(R.id.btnManualFreqChange);
         btnSetManually.setEnabled(false);
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
+        freqSelectedView = (TextView) findViewById(R.id.txtFreqSelected);
 
         freq = getResources().getInteger(R.integer.freq1);
         max_freq = getResources().getInteger(R.integer.freq_max);
@@ -60,12 +63,14 @@ public class ControlsMain extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar freqSpectrum) {
+                rgrp.clearCheck();
                 btnSetManually.setEnabled(false);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar freqSpectrum) {
                 freq = sbFreq.getProgress();
+                freqSelectedView.setText(Integer.toString(freq));
                 regen = true;
             }
         });
@@ -98,6 +103,8 @@ public class ControlsMain extends AppCompatActivity {
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 (2 * numSamples), AudioTrack.MODE_STATIC);
         audioBoss = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
     }
 
     /*
@@ -148,17 +155,25 @@ public class ControlsMain extends AppCompatActivity {
             ouahful.stop(); //need to convert to save the track beyond this method
         }
 
+        if ((freq != getResources().getInteger(R.integer.freq1)) &&
+                (freq != getResources().getInteger(R.integer.freq2)) &&
+                (freq != getResources().getInteger(R.integer.freq3))) {
+            rgrp.clearCheck();
+        }
+
         btnSetManually.setEnabled(false);
         playing = !playing;
     }
 
     public void onClickGrpFreqPresets(View view) {
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
+        freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
         btnSetManually.setEnabled(false);
     }
 
     public void onPresetFreqClick(View view) {
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
+        freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
         btnSetManually.setEnabled(false);
 
         switch (rgrp.getCheckedRadioButtonId()) {
@@ -184,11 +199,14 @@ public class ControlsMain extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),
                     "Unable to fetch frequency", Toast.LENGTH_SHORT).show();
             manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
+            freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
             return;
         }
 
         regen = true;
         sbFreq.setProgress(freq);
+        freqSelectedView.setText(Integer.toString(freq));
+        rgrp.clearCheck();
 
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
     }

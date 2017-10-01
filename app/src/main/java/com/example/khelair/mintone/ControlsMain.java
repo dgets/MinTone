@@ -263,14 +263,15 @@ public class ControlsMain extends AppCompatActivity {
             return ouah;
         } else if (ouah < min_freq) {
             //out of range, kill the user for the blasphemy
-            Toast.makeText(appShit, "Value too low (<" + min_freq + ")",
+            Toast.makeText(getApplicationContext(), "Value too low (<" + min_freq + ")",
                     Toast.LENGTH_SHORT).show();
         } else {
             //ditto
-            Toast.makeText(appShit, "Value too high (>" + max_freq + ")",
+            Toast.makeText(getApplicationContext(), "Value too high (>" + max_freq + ")",
                     Toast.LENGTH_SHORT).show();
         }
 
+        manualFreqValue.setText("");
         return freq;
     }
 

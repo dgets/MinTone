@@ -8,4 +8,5 @@
     <string name="text_subheader2">Volume</string>
     <string name="text_subheader3">Frequency</string>
     <string name="text_using_preset">Preset</string>
+    <string name="conf_file_name">MinTone.conf</string>
 </resources>

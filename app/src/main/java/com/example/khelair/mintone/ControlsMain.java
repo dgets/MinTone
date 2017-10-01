@@ -15,6 +15,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 //import com.example.khelair.mintone.MyException;
 
 public class ControlsMain extends AppCompatActivity {
@@ -36,6 +39,7 @@ public class ControlsMain extends AppCompatActivity {
 
     AudioTrack ouahful;
     AudioManager audioBoss;
+    Context appShit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +114,7 @@ public class ControlsMain extends AppCompatActivity {
     /*
      *  Widget controls
      */
-    public void onTogglePlay(View view) {
+    public void onTogglePlay(View view) throws MyException {
         byte    sounds[] = initSound(freq);
         /* AudioTrack  ouahful = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
@@ -146,9 +150,7 @@ public class ControlsMain extends AppCompatActivity {
                 ouahful.play();
             } catch (Exception e) {
                 btnTogglePlayback.setText(getResources().getString(R.string.text_off));
-                Toast.makeText(getApplicationContext(),
-                        "Playback Error", Toast.LENGTH_SHORT).show();
-                return;
+                throw new MyException(appShit, "Playback Error");
             }
         } else {
             btnTogglePlayback.setText(getResources().getString(R.string.text_off));
@@ -192,15 +194,13 @@ public class ControlsMain extends AppCompatActivity {
         regen = true;
     }
 
-    public void onSetManualFreq(View view) {
+    public void onSetManualFreq(View view) throws MyException {
         try {
             freq = getManualFreq();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(),
-                    "Unable to fetch frequency", Toast.LENGTH_SHORT).show();
             manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
             freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
-            return;
+            throw new MyException(appShit, "Unable to fetch frequency");
         }
 
         regen = true;
@@ -255,24 +255,35 @@ public class ControlsMain extends AppCompatActivity {
         try {
             ouah = Integer.parseInt(manualFreqValue.getText().toString());
         } catch (NumberFormatException e) {
-            //god ouah ouah ouah
-            Toast.makeText(getApplicationContext(), e.getMessage() , Toast.LENGTH_LONG).show();
-
             manualFreqValue.setText(Integer.toString(freq));
-            return freq;
+            throw new MyException(appShit, e.getMessage());
         }
 
         if ((ouah >= min_freq) && (ouah <= max_freq)) {
             return ouah;
         } else if (ouah < min_freq) {
             //out of range, kill the user for the blasphemy
-            Toast.makeText(getApplicationContext(),
-                    "Value < " + min_freq, Toast.LENGTH_SHORT).show();
-            throw new MyException("Value too low (<" + min_freq + ")");
+            Toast.makeText(appShit, "Value too low (<" + min_freq + ")",
+                    Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getApplicationContext(),
-                    "Value > " + max_freq, Toast.LENGTH_SHORT).show();
-            throw new MyException("Value too high (>" + max_freq + ")");
+            //ditto
+            Toast.makeText(appShit, "Value too high (>" + max_freq + ")",
+                    Toast.LENGTH_SHORT).show();
         }
+
+        return freq;
+    }
+
+    public void writeConf() throws MyException {
+        FileOutputStream confFile;
+
+        try {
+            confFile = openFileOutput(getResources().getText(R.string.conf_file_name).toString(),
+                    MODE_PRIVATE);
+        } catch (FileNotFoundException e) {
+            throw new MyException(appShit, "Can't open conf. Wut?");
+        }
+
+
     }
 }

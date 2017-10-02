@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 //import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -29,6 +30,7 @@ public class ControlsMain extends AppCompatActivity {
     private int     freq, max_freq, min_freq;
     private boolean playing     =   false;
     private boolean regen       =   true;
+    private boolean continuous  =   false;
 
     //controls
     private RadioGroup rgrp;
@@ -36,6 +38,7 @@ public class ControlsMain extends AppCompatActivity {
     private Button btnTogglePlayback, btnSetManually;
     private EditText manualFreqValue;
     private TextView freqSelectedView;
+    private CheckBox cbxLoop;
 
     AudioTrack ouahful;
     AudioManager audioBoss;
@@ -52,6 +55,7 @@ public class ControlsMain extends AppCompatActivity {
         btnSetManually.setEnabled(false);
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
         freqSelectedView = (TextView) findViewById(R.id.txtFreqSelected);
+        cbxLoop = (CheckBox) findViewById(R.id.cbxContinuous);
 
         freq = getResources().getInteger(R.integer.freq1);
         max_freq = getResources().getInteger(R.integer.freq_max);
@@ -138,7 +142,7 @@ public class ControlsMain extends AppCompatActivity {
 
                 @Override
                 public void onMarkerReached(AudioTrack track) {
-                    if (playing) {
+                    if (playing && !continuous) {
                         ouahful.stop();
                         btnTogglePlayback.setText(getResources().getString(R.string.text_off));
                         playing = !playing;
@@ -147,6 +151,11 @@ public class ControlsMain extends AppCompatActivity {
               });
             btnTogglePlayback.setText(getResources().getString(R.string.text_on));
             try {
+                if (!continuous) {
+                    ouahful.setLoopPoints(0, sampleRate, 0);
+                } else {
+                    ouahful.setLoopPoints(0, sampleRate, -1);
+                }
                 ouahful.play();
             } catch (Exception e) {
                 btnTogglePlayback.setText(getResources().getString(R.string.text_off));
@@ -216,9 +225,14 @@ public class ControlsMain extends AppCompatActivity {
         btnSetManually.setEnabled(true);
     }
 
+    public void onContinuousPlaybackClick(View view) {
+        continuous = cbxLoop.isChecked();
+    }
+
     /*
      * Methods mein
      */
+    //initial [arbitrary durational] tone generation
     private AudioTrack buildTrack(byte samples[]) {
         AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
@@ -229,6 +243,7 @@ public class ControlsMain extends AppCompatActivity {
         return track;
     }
 
+    //initial [arbitrary durational] tone generation
     private byte[] initSound(double frequency) {
         double  sampleData[]    =   new double[numSamples];
         byte  sampleInProgress[] = new byte[2 * numSamples];  //redundant, yeah :P

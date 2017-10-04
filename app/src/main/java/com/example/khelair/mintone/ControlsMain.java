@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-//import android.widget.RadioButton;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -21,6 +21,25 @@ import java.io.FileOutputStream;
 
 //import com.example.khelair.mintone.MyException;
 
+/**
+ * @author Damon Getsman
+ * started: 24 Sept 17
+ * finished:
+ *
+ * This little app, at least upon conception through alpha, is an extremely
+ * minimalistic tone generator for 'droid phones. It features three preset
+ * radio buttons, a manual numeric entry field, and a seekbar for different
+ * frequency selection options. While initially it was going to just play
+ * each tone for a preset duration, it seems that it would be much more useful
+ * if it had an option for continuous tone generation until toggled off. So,
+ * with that, and a few other thoughts as far as varying sample rate, and
+ * changing the available frequency presets, I've decided to add a small
+ * control panel, and the capability to save user settings.
+ *
+ * It would be good, at some point, to try to implement this in a fashion
+ * capable of audio playback, while other audio resources are being utilized,
+ * as well. I believe that's about it for now...
+ */
 public class ControlsMain extends AppCompatActivity {
 
     //a little bit more of a limited scope would be nice
@@ -31,9 +50,11 @@ public class ControlsMain extends AppCompatActivity {
     private boolean playing     =   false;
     private boolean regen       =   true;
     private boolean continuous  =   false;
+    private boolean customSet   =   false;
 
     //controls
     private RadioGroup rgrp;
+    private RadioButton[] rbts;
     private SeekBar sbFreq, sbVol;
     private Button btnTogglePlayback, btnSetManually;
     private EditText manualFreqValue;
@@ -44,12 +65,17 @@ public class ControlsMain extends AppCompatActivity {
     AudioManager audioBoss;
     Context appShit;
 
-    @Override
+    /**
+     * @param savedInstanceState - Bundle (see also every 'droid GUI app)
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controls_main);
 
         rgrp = (RadioGroup) findViewById(R.id.rgrpFreqPresets);
+        rbts[0] = (RadioButton) findViewById(R.id.rbtOne);
+        rbts[1] = (RadioButton) findViewById(R.id.rbtTwo);
+        rbts[2] = (RadioButton) findViewById(R.id.rbtThree);
         btnTogglePlayback = (Button) findViewById(R.id.btnTglPlaying);
         btnSetManually = (Button) findViewById(R.id.btnManualFreqChange);
         btnSetManually.setEnabled(false);
@@ -117,6 +143,8 @@ public class ControlsMain extends AppCompatActivity {
 
     /*
      *  Widget controls
+     *  @param view - (see also every method in the action class)
+     *  @throws MyException
      */
     public void onTogglePlay(View view) throws MyException {
         byte    sounds[] = initSound(freq);
@@ -176,33 +204,50 @@ public class ControlsMain extends AppCompatActivity {
         playing = !playing;
     }
 
+    /**
+     *
+     * @param view
+     */
     public void onClickGrpFreqPresets(View view) {
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
         freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
         btnSetManually.setEnabled(false);
     }
 
+    /**
+     *
+     * @param view
+     */
     public void onPresetFreqClick(View view) {
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
         freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
         btnSetManually.setEnabled(false);
 
-        switch (rgrp.getCheckedRadioButtonId()) {
-            case R.id.rbtOne:
-                freq = getResources().getInteger(R.integer.freq1);
-                break;
-            case R.id.rbtTwo:
-                freq = getResources().getInteger(R.integer.freq2);
-                break;
-            case R.id.rbtThree:
-                freq = getResources().getInteger(R.integer.freq3);
-                break;
-        }
+        if (!customSet) {
+            switch (rgrp.getCheckedRadioButtonId()) {
+                case R.id.rbtOne:
+                    freq = getResources().getInteger(R.integer.freq1);
+                    break;
+                case R.id.rbtTwo:
+                    freq = getResources().getInteger(R.integer.freq2);
+                    break;
+                case R.id.rbtThree:
+                    freq = getResources().getInteger(R.integer.freq3);
+                    break;
+            }
+        } /* else {
+
+        } */
 
         sbFreq.setProgress(freq);
         regen = true;
     }
 
+    /**
+     *
+     * @param view
+     * @throws MyException
+     */
     public void onSetManualFreq(View view) throws MyException {
         try {
             freq = getManualFreq();
@@ -220,19 +265,29 @@ public class ControlsMain extends AppCompatActivity {
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
     }
 
+    /**
+     *
+     * @param view
+     */
     public void onClickManualFreqEntry(View view) {
         manualFreqValue.setEnabled(true);
         btnSetManually.setEnabled(true);
     }
 
+    /**
+     *
+     * @param view
+     */
     public void onContinuousPlaybackClick(View view) {
         continuous = cbxLoop.isChecked();
     }
 
-    /*
-     * Methods mein
+    //Methods mein
+    /**
+     * Builds track from samples array
+     * @param samples - byte array
+     * @return track - AudioTrack
      */
-    //initial [arbitrary durational] tone generation
     private AudioTrack buildTrack(byte samples[]) {
         AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
@@ -243,7 +298,11 @@ public class ControlsMain extends AppCompatActivity {
         return track;
     }
 
-    //initial [arbitrary durational] tone generation
+    /**
+     * initial [arbitrary durational] tone generation
+     * @param frequency - double value in Hz
+     * @return samples byte array
+     */
     private byte[] initSound(double frequency) {
         double  sampleData[]    =   new double[numSamples];
         byte  sampleInProgress[] = new byte[2 * numSamples];  //redundant, yeah :P
@@ -264,6 +323,11 @@ public class ControlsMain extends AppCompatActivity {
         return sampleInProgress;
     }
 
+    /**
+     *
+     * @return
+     * @throws MyException
+     */
     public int getManualFreq() throws MyException {
         int ouah;
 
@@ -290,6 +354,10 @@ public class ControlsMain extends AppCompatActivity {
         return freq;
     }
 
+    /**
+     *
+     * @throws MyException
+     */
     public void writeConf() throws MyException {
         FileOutputStream confFile;
 
@@ -300,6 +368,25 @@ public class ControlsMain extends AppCompatActivity {
             throw new MyException(appShit, "Can't open conf. Wut?");
         }
 
+    }
 
+    /**
+     * @param newValues
+     * @return
+     */
+    /*public Boolean setPresets(int[] newValues) {
+        for (int cntr = 0;cntr < newValues.length; cntr++) {
+            this.rbts[cntr]. = newValues[cntr];
+        }
+
+        return true;
+    }*/
+
+    /**
+     *
+     * @return
+     */
+    public RadioButton[] getPresets() {
+        return this.rbts;
     }
 }

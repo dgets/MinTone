@@ -54,7 +54,7 @@ public class ControlsMain extends AppCompatActivity {
 
     //controls
     private RadioGroup rgrp;
-    private RadioButton[] rbts;
+    protected RadioButton[] rbts;
     private SeekBar sbFreq, sbVol;
     private Button btnTogglePlayback, btnSetManually;
     private EditText manualFreqValue;
@@ -73,9 +73,9 @@ public class ControlsMain extends AppCompatActivity {
         setContentView(R.layout.activity_controls_main);
 
         rgrp = (RadioGroup) findViewById(R.id.rgrpFreqPresets);
-        rbts[0] = (RadioButton) findViewById(R.id.rbtOne);
+        /*rbts[0] = (RadioButton) findViewById(R.id.rbtOne);
         rbts[1] = (RadioButton) findViewById(R.id.rbtTwo);
-        rbts[2] = (RadioButton) findViewById(R.id.rbtThree);
+        rbts[2] = (RadioButton) findViewById(R.id.rbtThree);*/
         btnTogglePlayback = (Button) findViewById(R.id.btnTglPlaying);
         btnSetManually = (Button) findViewById(R.id.btnManualFreqChange);
         btnSetManually.setEnabled(false);
@@ -386,7 +386,7 @@ public class ControlsMain extends AppCompatActivity {
      *
      * @return
      */
-    public RadioButton[] getPresets() {
+    /*public RadioButton[] getPresets() {
         return this.rbts;
-    }
+    }*/
 }

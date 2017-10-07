@@ -94,11 +94,11 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:max="@integer/freq_max"
+        android:min="@integer/freq_min"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="@+id/rgrpFreqPresets"
         app:layout_constraintTop_toBottomOf="@+id/txtSubHeader2"
-        tools:min="@integer/freq_min"
         tools:layout_editor_absoluteY="295dp" />
 
     <ToggleButton
@@ -124,7 +124,7 @@
         android:layout_width="159dp"
         android:layout_height="64dp"
         android:ems="10"
-        android:inputType="number"
+        android:inputType="number|numberDecimal"
         android:onClick="onClickManualFreqEntry"
         app:layout_constraintRight_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/rgrpFreqPresets"
@@ -186,7 +186,8 @@
         android:fontFamily="monospace"
         android:text="@string/text_using_preset"
         android:textAlignment="center"
-        android:textSize="38sp"
+        android:textSize="30sp"
+        android:textStyle="bold"
         android:typeface="monospace"
         app:layout_constraintBottom_toBottomOf="@+id/sbrFreqSlider"
         app:layout_constraintLeft_toRightOf="@+id/sbrFreqSlider"

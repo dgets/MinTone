@@ -43,10 +43,11 @@ import java.io.FileOutputStream;
 public class ControlsMain extends AppCompatActivity {
 
     //a little bit more of a limited scope would be nice
+    private double  freq;
     private int     duration    =   3;
     private int     sampleRate  =   8000;
     private int     numSamples  =   duration * sampleRate;
-    private int     freq, max_freq, min_freq;
+    private int     max_freq, min_freq;
     private boolean playing     =   false;
     private boolean regen       =   true;
     private boolean continuous  =   false;
@@ -72,6 +73,8 @@ public class ControlsMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controls_main);
 
+        //'constants'
+
         rgrp = (RadioGroup) findViewById(R.id.rgrpFreqPresets);
         /*rbts[0] = (RadioButton) findViewById(R.id.rbtOne);
         rbts[1] = (RadioButton) findViewById(R.id.rbtTwo);
@@ -83,16 +86,20 @@ public class ControlsMain extends AppCompatActivity {
         freqSelectedView = (TextView) findViewById(R.id.txtFreqSelected);
         cbxLoop = (CheckBox) findViewById(R.id.cbxContinuous);
 
-        freq = getResources().getInteger(R.integer.freq1);
+        freq = (int) getResources().getInteger(R.integer.freq1);
         max_freq = getResources().getInteger(R.integer.freq_max);
         min_freq = getResources().getInteger(R.integer.freq_min);
 
         sbFreq = (SeekBar) findViewById(R.id.sbrFreqSlider);
-        sbFreq.setProgress(freq);
+        sbFreq.setProgress((int) freq);
         sbFreq.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar freqSpectrum, int progress, boolean ouah) {
-                //freq = progress;
+                if ((progress >= (int) (freq + 5)) || (progress <= (int) (freq - 5))) {
+                    freq = (int) sbFreq.getProgress();
+                    int nakk = (int) freq;
+                    freqSelectedView.setText((String.valueOf(nakk)));
+                }
             }
 
             @Override
@@ -103,9 +110,27 @@ public class ControlsMain extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar freqSpectrum) {
-                freq = sbFreq.getProgress();
-                freqSelectedView.setText(Integer.toString(freq));
+                /*
+                 * not sure why, but ever since changing freq to a double for
+                 * greater precision, the seekbar frequency selection has been
+                 * totally fucked
+                 */
+                freq = (double) sbFreq.getProgress();
+                freqSelectedView.setText(Double.toString(freq));
                 regen = true;
+
+                //now we need to stop the playing tone (if any), rebuild, and start the new tone
+                //actually, rebuilding in the background would be best before stopping
+                if (playing) {
+                    AudioTrack newTrack = buildTrack(initSound(freq));
+                    ouahful.stop();
+                    ouahful = newTrack;
+                    setATListeners();
+                    /*if (continuous) {
+                        ouahful.setLoopPoints(0, sampleRate, -1);
+                    }*/
+                    ouahful.play();
+                }
             }
         });
         sbVol = (SeekBar) findViewById(R.id.sbrVolSlider);
@@ -159,36 +184,9 @@ public class ControlsMain extends AppCompatActivity {
             ouahful = buildTrack(sounds);
             ouahful.setNotificationMarkerPosition(numSamples);
 
-            //should this be handled here?  probably not, methinks
-            ouahful.setPlaybackPositionUpdateListener(
-             new AudioTrack.OnPlaybackPositionUpdateListener()
-              {
-                @Override
-                public void onPeriodicNotification(AudioTrack track) {
-                    // nothing to do
-                }
-
-                @Override
-                public void onMarkerReached(AudioTrack track) {
-                    if (playing && !continuous) {
-                        ouahful.stop();
-                        btnTogglePlayback.setText(getResources().getString(R.string.text_off));
-                        playing = !playing;
-                    }
-                }
-              });
+            setATListeners();
             btnTogglePlayback.setText(getResources().getString(R.string.text_on));
-            try {
-                if (!continuous) {
-                    ouahful.setLoopPoints(0, sampleRate, 0);
-                } else {
-                    ouahful.setLoopPoints(0, sampleRate, -1);
-                }
-                ouahful.play();
-            } catch (Exception e) {
-                btnTogglePlayback.setText(getResources().getString(R.string.text_off));
-                throw new MyException(appShit, "Playback Error");
-            }
+            ouahful.play();
         } else {
             btnTogglePlayback.setText(getResources().getString(R.string.text_off));
             ouahful.stop(); //need to convert to save the track beyond this method
@@ -226,21 +224,27 @@ public class ControlsMain extends AppCompatActivity {
         if (!customSet) {
             switch (rgrp.getCheckedRadioButtonId()) {
                 case R.id.rbtOne:
-                    freq = getResources().getInteger(R.integer.freq1);
+                    freq = (double) getResources().getInteger(R.integer.freq1);
                     break;
                 case R.id.rbtTwo:
-                    freq = getResources().getInteger(R.integer.freq2);
+                    freq = (double) getResources().getInteger(R.integer.freq2);
                     break;
                 case R.id.rbtThree:
-                    freq = getResources().getInteger(R.integer.freq3);
+                    freq = (double) getResources().getInteger(R.integer.freq3);
                     break;
             }
-        } /* else {
+        }
 
-        } */
-
-        sbFreq.setProgress(freq);
+        sbFreq.setProgress((int) freq);
         regen = true;
+
+        if (playing) {
+            AudioTrack newTrack = buildTrack(initSound(freq));
+            ouahful.stop();
+            ouahful = newTrack;
+            setATListeners();
+            ouahful.play();
+        }
     }
 
     /**
@@ -258,11 +262,19 @@ public class ControlsMain extends AppCompatActivity {
         }
 
         regen = true;
-        sbFreq.setProgress(freq);
-        freqSelectedView.setText(Integer.toString(freq));
+        sbFreq.setProgress((int) freq);
+        freqSelectedView.setText(Double.toString(freq));
         rgrp.clearCheck();
 
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
+
+        if (playing) {
+            AudioTrack newTrack = buildTrack(initSound(freq));
+            ouahful.stop();
+            ouahful = newTrack;
+            setATListeners();
+            ouahful.play();
+        }
     }
 
     /**
@@ -280,6 +292,11 @@ public class ControlsMain extends AppCompatActivity {
      */
     public void onContinuousPlaybackClick(View view) {
         continuous = cbxLoop.isChecked();
+        if (playing) {
+            ouahful.stop();
+            btnTogglePlayback.setText(getResources().getString(R.string.text_off));
+            ouahful.setLoopPoints(0, sampleRate, 0);
+        }
     }
 
     //Methods mein
@@ -325,16 +342,16 @@ public class ControlsMain extends AppCompatActivity {
 
     /**
      *
-     * @return
+     * @return double
      * @throws MyException
      */
-    public int getManualFreq() throws MyException {
-        int ouah;
+    public double getManualFreq() throws MyException {
+        double ouah;
 
         try {
-            ouah = Integer.parseInt(manualFreqValue.getText().toString());
+            ouah = Double.parseDouble(manualFreqValue.getText().toString());
         } catch (NumberFormatException e) {
-            manualFreqValue.setText(Integer.toString(freq));
+            manualFreqValue.setText(Double.toString(freq));
             throw new MyException(appShit, e.getMessage());
         }
 
@@ -358,7 +375,7 @@ public class ControlsMain extends AppCompatActivity {
      *
      * @throws MyException
      */
-    public void writeConf() throws MyException {
+    /*public void writeConf() throws MyException {
         FileOutputStream confFile;
 
         try {
@@ -368,6 +385,33 @@ public class ControlsMain extends AppCompatActivity {
             throw new MyException(appShit, "Can't open conf. Wut?");
         }
 
+    }*/
+
+    private void setATListeners() {
+        ouahful.setPlaybackPositionUpdateListener(
+            new AudioTrack.OnPlaybackPositionUpdateListener() {
+                    @Override
+                    public void onPeriodicNotification(AudioTrack track) {
+                        // nothing to do
+                    }
+
+                    @Override
+                    public void onMarkerReached(AudioTrack track) {
+                        if (playing && !continuous) {
+                            ouahful.stop();
+                            btnTogglePlayback.setText(getResources().getString(R.string.text_off));
+                            playing = !playing;
+                        }
+                    }
+            });
+
+            if (!continuous) {
+                ouahful.setLoopPoints(0, sampleRate, 0);
+            } else {
+                ouahful.setLoopPoints(0, sampleRate, -1);
+            }
+
+        return;
     }
 
     /**

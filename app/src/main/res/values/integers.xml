@@ -4,7 +4,7 @@
     <integer name="freq_max">20000</integer>
     <integer name="freq1">432</integer>
     <integer name="freq2">528</integer>
-    <integer name="freq3">666</integer>
+    <integer name="freq3">936</integer>
     <integer name="vol_min">0</integer>
     <integer name="vol_max">9</integer>
     <integer name="vol_start">4</integer>

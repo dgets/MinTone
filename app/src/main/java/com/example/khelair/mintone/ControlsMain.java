@@ -10,16 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
-//import com.example.khelair.mintone.MyException;
 
 /**
  * @author Damon Getsman
@@ -55,7 +49,7 @@ public class ControlsMain extends AppCompatActivity {
 
     //controls
     private RadioGroup rgrp;
-    protected RadioButton[] rbts;
+    //protected RadioButton[] rbts;
     private SeekBar sbFreq, sbVol;
     private Button btnTogglePlayback, btnSetManually;
     private EditText manualFreqValue;
@@ -86,7 +80,7 @@ public class ControlsMain extends AppCompatActivity {
         freqSelectedView = (TextView) findViewById(R.id.txtFreqSelected);
         cbxLoop = (CheckBox) findViewById(R.id.cbxContinuous);
 
-        freq = (int) getResources().getInteger(R.integer.freq1);
+        freq = getResources().getInteger(R.integer.freq1);
         max_freq = getResources().getInteger(R.integer.freq_max);
         min_freq = getResources().getInteger(R.integer.freq_min);
 
@@ -204,7 +198,7 @@ public class ControlsMain extends AppCompatActivity {
 
     /**
      *
-     * @param view
+     * @param view View necessary boilerplate
      */
     public void onClickGrpFreqPresets(View view) {
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
@@ -214,7 +208,7 @@ public class ControlsMain extends AppCompatActivity {
 
     /**
      *
-     * @param view
+     * @param view View necessary boilerplate
      */
     public void onPresetFreqClick(View view) {
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
@@ -249,8 +243,8 @@ public class ControlsMain extends AppCompatActivity {
 
     /**
      *
-     * @param view
-     * @throws MyException
+     * @param view View necessary boilerplate
+     * @throws MyException ouah
      */
     public void onSetManualFreq(View view) throws MyException {
         try {
@@ -279,7 +273,7 @@ public class ControlsMain extends AppCompatActivity {
 
     /**
      *
-     * @param view
+     * @param view View boilerplate
      */
     public void onClickManualFreqEntry(View view) {
         manualFreqValue.setEnabled(true);
@@ -288,7 +282,7 @@ public class ControlsMain extends AppCompatActivity {
 
     /**
      *
-     * @param view
+     * @param view View boilerplate
      */
     public void onContinuousPlaybackClick(View view) {
         continuous = cbxLoop.isChecked();
@@ -343,7 +337,7 @@ public class ControlsMain extends AppCompatActivity {
     /**
      *
      * @return double
-     * @throws MyException
+     * @throws MyException ouah
      */
     public double getManualFreq() throws MyException {
         double ouah;
@@ -373,7 +367,7 @@ public class ControlsMain extends AppCompatActivity {
 
     /**
      *
-     * @throws MyException
+     * @throws MyException ouah
      */
     /*public void writeConf() throws MyException {
         FileOutputStream confFile;
@@ -413,24 +407,4 @@ public class ControlsMain extends AppCompatActivity {
 
         return;
     }
-
-    /**
-     * @param newValues
-     * @return
-     */
-    /*public Boolean setPresets(int[] newValues) {
-        for (int cntr = 0;cntr < newValues.length; cntr++) {
-            this.rbts[cntr]. = newValues[cntr];
-        }
-
-        return true;
-    }*/
-
-    /**
-     *
-     * @return
-     */
-    /*public RadioButton[] getPresets() {
-        return this.rbts;
-    }*/
 }

@@ -125,6 +125,7 @@
         android:layout_height="64dp"
         android:ems="10"
         android:inputType="number|numberDecimal"
+        android:numeric="decimal"
         android:onClick="onClickManualFreqEntry"
         app:layout_constraintRight_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/rgrpFreqPresets"
@@ -140,8 +141,8 @@
         app:layout_constraintTop_toBottomOf="@+id/edtManualFreq"
         app:layout_constraintRight_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/rgrpFreqPresets"
-        tools:layout_editor_absoluteX="207dp"
-        tools:layout_editor_absoluteY="213dp" />
+        android:layout_marginRight="-384dp"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/txtSubHeader3"

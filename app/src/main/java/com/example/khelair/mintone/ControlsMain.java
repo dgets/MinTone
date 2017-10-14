@@ -23,12 +23,7 @@ import android.widget.Toast;
  * This little app, at least upon conception through alpha, is an extremely
  * minimalistic tone generator for 'droid phones. It features three preset
  * radio buttons, a manual numeric entry field, and a seekbar for different
- * frequency selection options. While initially it was going to just play
- * each tone for a preset duration, it seems that it would be much more useful
- * if it had an option for continuous tone generation until toggled off. So,
- * with that, and a few other thoughts as far as varying sample rate, and
- * changing the available frequency presets, I've decided to add a small
- * control panel, and the capability to save user settings.
+ * frequency selection options.
  *
  * It would be good, at some point, to try to implement this in a fashion
  * capable of audio playback, while other audio resources are being utilized,
@@ -45,7 +40,7 @@ public class ControlsMain extends AppCompatActivity {
     private boolean playing     =   false;
     private boolean regen       =   true;
     private boolean continuous  =   false;
-    private boolean customSet   =   false;
+    //private boolean customSet   =   false;
 
     //controls
     private RadioGroup rgrp;
@@ -90,7 +85,7 @@ public class ControlsMain extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar freqSpectrum, int progress, boolean ouah) {
                 if ((progress >= (int) (freq + 5)) || (progress <= (int) (freq - 5))) {
-                    freq = (int) sbFreq.getProgress();
+                    freq = sbFreq.getProgress();
                     int nakk = (int) freq;
                     freqSelectedView.setText((String.valueOf(nakk)));
                 }
@@ -110,7 +105,7 @@ public class ControlsMain extends AppCompatActivity {
                  * totally fucked
                  */
                 freq = (double) sbFreq.getProgress();
-                freqSelectedView.setText(Double.toString(freq));
+                freqSelectedView.setText(Double.toString(freq)); //do properly
                 regen = true;
 
                 //now we need to stop the playing tone (if any), rebuild, and start the new tone
@@ -152,6 +147,7 @@ public class ControlsMain extends AppCompatActivity {
             }
         });
 
+        //need to find out what to use instead of the deprecated AudioTrack
         ouahful = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 (2 * numSamples), AudioTrack.MODE_STATIC);
@@ -215,7 +211,7 @@ public class ControlsMain extends AppCompatActivity {
         freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
         btnSetManually.setEnabled(false);
 
-        if (!customSet) {
+        //if (!customSet) {
             switch (rgrp.getCheckedRadioButtonId()) {
                 case R.id.rbtOne:
                     freq = (double) getResources().getInteger(R.integer.freq1);
@@ -227,7 +223,7 @@ public class ControlsMain extends AppCompatActivity {
                     freq = (double) getResources().getInteger(R.integer.freq3);
                     break;
             }
-        }
+        //}
 
         sbFreq.setProgress((int) freq);
         regen = true;
@@ -250,14 +246,16 @@ public class ControlsMain extends AppCompatActivity {
         try {
             freq = getManualFreq();
         } catch (Exception e) {
-            manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
-            freqSelectedView.setText(getResources().getString(R.string.text_using_preset));
+            manualFreqValue.setEnabled(false);
+            manualFreqValue.setEnabled(true);
+            freqSelectedView.setText(
+                    getResources().getString(R.string.text_using_preset));
             throw new MyException(appShit, "Unable to fetch frequency");
         }
 
         regen = true;
         sbFreq.setProgress((int) freq);
-        freqSelectedView.setText(Double.toString(freq));
+        freqSelectedView.setText(Double.toString(freq));    //fix when able
         rgrp.clearCheck();
 
         manualFreqValue.setEnabled(false); manualFreqValue.setEnabled(true);
@@ -300,6 +298,7 @@ public class ControlsMain extends AppCompatActivity {
      * @return track - AudioTrack
      */
     private AudioTrack buildTrack(byte samples[]) {
+        //fix deprecated AudioTrack issue
         AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, samples.length,
@@ -340,24 +339,26 @@ public class ControlsMain extends AppCompatActivity {
      * @throws MyException ouah
      */
     public double getManualFreq() throws MyException {
-        double ouah;
+        double ouah = 0;
 
         try {
             ouah = Double.parseDouble(manualFreqValue.getText().toString());
         } catch (NumberFormatException e) {
-            manualFreqValue.setText(Double.toString(freq));
-            throw new MyException(appShit, e.getMessage());
+            manualFreqValue.setText(Double.toString(freq)); //fix when able
+            //throw new MyException(appShit, e.getMessage());
         }
 
         if ((ouah >= min_freq) && (ouah <= max_freq)) {
             return ouah;
         } else if (ouah < min_freq) {
             //out of range, kill the user for the blasphemy
-            Toast.makeText(getApplicationContext(), "Value too low (<" + min_freq + ")",
+            Toast.makeText(getApplicationContext(),
+                    "Value too low (<" + min_freq + ")",
                     Toast.LENGTH_SHORT).show();
         } else {
             //ditto
-            Toast.makeText(getApplicationContext(), "Value too high (>" + max_freq + ")",
+            Toast.makeText(getApplicationContext(),
+                    "Value too high (>" + max_freq + ")",
                     Toast.LENGTH_SHORT).show();
         }
 
@@ -393,7 +394,9 @@ public class ControlsMain extends AppCompatActivity {
                     public void onMarkerReached(AudioTrack track) {
                         if (playing && !continuous) {
                             ouahful.stop();
-                            btnTogglePlayback.setText(getResources().getString(R.string.text_off));
+                            btnTogglePlayback.setText(
+                                    getResources().getString(
+                                            R.string.text_off));
                             playing = !playing;
                         }
                     }
@@ -404,7 +407,5 @@ public class ControlsMain extends AppCompatActivity {
             } else {
                 ouahful.setLoopPoints(0, sampleRate, -1);
             }
-
-        return;
     }
 }

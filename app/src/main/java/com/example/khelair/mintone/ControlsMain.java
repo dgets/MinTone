@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 /**
  * @author Damon Getsman
@@ -46,7 +47,8 @@ public class ControlsMain extends AppCompatActivity {
     private RadioGroup rgrp;
     //protected RadioButton[] rbts;
     private SeekBar sbFreq, sbVol;
-    private Button btnTogglePlayback, btnSetManually;
+    private ToggleButton btnTogglePlayback;
+    private Button btnSetManually;
     private EditText manualFreqValue;
     private TextView freqSelectedView;
     private CheckBox cbxLoop;
@@ -68,7 +70,7 @@ public class ControlsMain extends AppCompatActivity {
         /*rbts[0] = (RadioButton) findViewById(R.id.rbtOne);
         rbts[1] = (RadioButton) findViewById(R.id.rbtTwo);
         rbts[2] = (RadioButton) findViewById(R.id.rbtThree);*/
-        btnTogglePlayback = (Button) findViewById(R.id.btnTglPlaying);
+        btnTogglePlayback = (ToggleButton) findViewById(R.id.btnTglPlaying);
         btnSetManually = (Button) findViewById(R.id.btnManualFreqChange);
         btnSetManually.setEnabled(false);
         manualFreqValue = (EditText) findViewById(R.id.edtManualFreq);
@@ -394,9 +396,7 @@ public class ControlsMain extends AppCompatActivity {
                     public void onMarkerReached(AudioTrack track) {
                         if (playing && !continuous) {
                             ouahful.stop();
-                            btnTogglePlayback.setText(
-                                    getResources().getString(
-                                            R.string.text_off));
+                            btnTogglePlayback.setChecked(false);
                             playing = !playing;
                         }
                     }

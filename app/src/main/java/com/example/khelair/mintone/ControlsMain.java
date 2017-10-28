@@ -170,6 +170,9 @@ public class ControlsMain extends AppCompatActivity {
                 sounds.length, AudioTrack.MODE_STATIC); */
 
         if (!playing) {
+            //disable the checkbox for issue #9
+            cbxLoop.setClickable(false);
+
             if (regen) {
                 sounds = initSound(freq);
             }
@@ -180,6 +183,9 @@ public class ControlsMain extends AppCompatActivity {
             btnTogglePlayback.setText(getResources().getString(R.string.text_on));
             ouahful.play();
         } else {
+            //enable as per #9
+            cbxLoop.setClickable(true);
+
             btnTogglePlayback.setText(getResources().getString(R.string.text_off));
             ouahful.stop(); //need to convert to save the track beyond this method
         }
@@ -397,6 +403,7 @@ public class ControlsMain extends AppCompatActivity {
                         if (playing && !continuous) {
                             ouahful.stop();
                             btnTogglePlayback.setChecked(false);
+                            cbxLoop.setClickable(true);
                             playing = !playing;
                         }
                     }
